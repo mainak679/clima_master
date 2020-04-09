@@ -11,16 +11,13 @@ class LocationScreen extends StatefulWidget {
 }
 
 class _LocationScreenState extends State<LocationScreen> {
-  
-  WeatherModel weather=WeatherModel();
+  WeatherModel weather = WeatherModel();
   int temperature;
   String weatherIcon;
   String cityName;
   String weatherMessage;
 
   @override
-  
-
   @override
   void initState() {
     super.initState();
@@ -30,21 +27,20 @@ class _LocationScreenState extends State<LocationScreen> {
 
   void updateUI(dynamic weatherData) {
     setState(() {
-      if(weatherData== null){
-        temperature=0;
-        weatherIcon='Error';
+      if (weatherData == null) {
+        temperature = 0;
+        weatherIcon = 'Error';
         weatherMessage = "unable to get weather data";
-        cityName='';
+        cityName = '';
         return;
       }
       double temp = weatherData['main']['temp'];
-    temperature=temp.toInt();
-    var condition = weatherData['weather'][0]['id'];
-    weatherIcon = weather.getWeatherIcon(condition);
-    cityName = weatherData['name'];
-    weatherMessage=weather.getMessage(temperature);
+      temperature = temp.toInt();
+      var condition = weatherData['weather'][0]['id'];
+      weatherIcon = weather.getWeatherIcon(condition);
+      cityName = weatherData['name'];
+      weatherMessage = weather.getMessage(temperature);
     });
-    
   }
 
   Widget build(BuildContext context) {
@@ -68,7 +64,7 @@ class _LocationScreenState extends State<LocationScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   FlatButton(
-                    onPressed: () async{
+                    onPressed: () async {
                       var weatherData = await weather.getLocationWeather();
                       updateUI(weatherData);
                     },
@@ -78,8 +74,19 @@ class _LocationScreenState extends State<LocationScreen> {
                     ),
                   ),
                   FlatButton(
-                    onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context){return CityScreen();},),);
+                    onPressed: () async {
+                     var typedName= await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return CityScreen();
+                          },
+                        ),
+                      );
+                      if(typedName != null){
+                        var weatherData=weather.getCityWeather(typedName);
+                        updateUI(weatherData);
+                      }
                     },
                     child: Icon(
                       Icons.location_city,
